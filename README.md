@@ -22,6 +22,7 @@ During the development I checked different ways to develop things, here are some
 
 This are interesting things that I'd like to add to the project as time goes on, the current objectives are fullfilled, and my time allows it
 
+- Better models and animations
 - Aim / Feet IK
 - Cover System
 - Wall-running
