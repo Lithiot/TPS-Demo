@@ -7,8 +7,8 @@ This is a portfolio project being developed since 23/10/2020
 The current aim of the project is to archieve a simple Third Person Shooter gameplay experience with:
 
 - A custom controller using Cinemachine for the camera + unity's CharacterController
-- A modular weapon system with the use of Bolt for visual scripting and fast iteration
-- Use of FSM + Unity's Pathfinding system for a simple Zombie AI
+- A modular weapon system
+- Use of Bolt + Unity's Pathfinding system for a simple Zombie AI
 
 ## Resources used
 
