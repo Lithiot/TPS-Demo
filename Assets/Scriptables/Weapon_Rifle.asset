@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65c47e95bd875174fa129dbed9f932c9, type: 3}
+  m_Name: Weapon_Rifle
+  m_EditorClassIdentifier: 
+  weaponName: Weapon_Rifle
+  weaponDamage: 2
+  clipSize: 20
+  fireRate: 0.3
+  weaponPrefab: {fileID: 5181932135120029072, guid: b1e40a3f7b9765b40b40c1fb6411c818,
+    type: 3}

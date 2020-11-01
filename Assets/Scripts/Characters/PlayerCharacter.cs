@@ -2,7 +2,17 @@
 using TPSDemo.Core;
 using Bolt;
 
-namespace TPSDemo.Characters {
+namespace TPSDemo.Characters 
+{
+    public enum PlayerStates
+    {
+        Relaxed = 0, Sprinting, Aiming, Count
+    }
+    public enum PlayerEvents
+    {
+        Relax = 0, StartSprint, AimDownSights, Count
+    }
+
     public class PlayerCharacter : Entity
     {
         [Header("Control Stats")]
@@ -14,17 +24,22 @@ namespace TPSDemo.Characters {
         public Transform Camera;
 
         [Header("Cinemachine Cameras")]
+        public GameObject lookAtPoint;
         public GameObject movementCamera;
         public GameObject aimingCamera;
 
         private InputDetector inputDetector;
         private CharacterController controller;
+        private AnimationsController animController;
+        private WeaponController weaponController;
         private float turnSmoothvelocity;
 
         private void Awake()
         {
             inputDetector = GetComponent<InputDetector>();
             controller = GetComponent<CharacterController>();
+            animController = GetComponent<AnimationsController>();
+            weaponController = GetComponent<WeaponController>();
         }
 
         private void Start()
@@ -36,10 +51,8 @@ namespace TPSDemo.Characters {
             FSM.RegisterTransition((int)PlayerStates.Relaxed , (int)PlayerStates.Aiming , (int)PlayerEvents.AimDownSights);
             // From Sprinting
             FSM.RegisterTransition((int)PlayerStates.Sprinting , (int)PlayerStates.Relaxed , (int)PlayerEvents.Relax);
-            FSM.RegisterTransition((int)PlayerStates.Sprinting , (int)PlayerStates.Aiming , (int)PlayerEvents.AimDownSights);
             // From Aiming
             FSM.RegisterTransition((int)PlayerStates.Aiming , (int)PlayerStates.Relaxed , (int)PlayerEvents.Relax);
-            FSM.RegisterTransition((int)PlayerStates.Aiming , (int)PlayerStates.Sprinting , (int)PlayerStates.Sprinting);
 
             FSM.onStateChanged -= SwitchCamera;
             FSM.onStateChanged += SwitchCamera;
@@ -79,31 +92,30 @@ namespace TPSDemo.Characters {
         {
             Movement(inputs , sprintMultiplier);
 
+            // Future Wall running
+
             if(!inputs.sprint)
                 currentState = (PlayerStates)FSM.CheckTransition((int)currentState , (int)PlayerEvents.Relax);
-
-            if (inputs.aimDownSights == 1)
-                currentState = (PlayerStates)FSM.CheckTransition((int)currentState , (int)PlayerEvents.AimDownSights);
         }
 
         private void AimingUpdate(FrameInputs inputs) 
         {
             Movement(inputs , 1.0f , false);
 
-            if (inputs.aimDownSights != 1.0f) 
-            {
-                currentState = (PlayerStates)FSM.CheckTransition((int)currentState , (int)PlayerEvents.Relax);
-            }
+            // Fire
+            if (inputs.fire != 0.0f) weaponController.TriggerFire();
+            // Reload
+            if (inputs.reload) weaponController.Reload();
 
-            if (inputs.sprint)
-                currentState = (PlayerStates)FSM.CheckTransition((int)currentState , (int)PlayerEvents.StartSprint);
+            if (inputs.aimDownSights != 1.0f) 
+                currentState = (PlayerStates)FSM.CheckTransition((int)currentState , (int)PlayerEvents.Relax);
         }
 
         private void Movement(FrameInputs inputs, float speedMultiplier = 1.0f, bool freeLook = true) 
         {
             Vector3 direction = new Vector3(inputs.horizontal, 0.0f, inputs.vertical).normalized;
 
-            float mySpeed = Speed * speedMultiplier;
+            float mySpeed = speed * speedMultiplier;
             float targetAngle = 0.0f;
 
             if (direction.magnitude >= 0.1f || !freeLook) 
@@ -126,6 +138,11 @@ namespace TPSDemo.Characters {
 
             movementCamera.SetActive(!isAiming);
             aimingCamera.SetActive(isAiming);
+
+            if (aimingCamera.activeInHierarchy)
+                lookAtPoint.transform.parent = weaponController.firePosition;
+            else
+                lookAtPoint.transform.parent = gameObject.transform;
         }
     }
 }
