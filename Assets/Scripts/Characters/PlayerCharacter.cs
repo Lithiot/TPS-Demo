@@ -106,15 +106,17 @@ namespace TPSDemo.Characters {
             float mySpeed = Speed * speedMultiplier;
             float targetAngle = 0.0f;
 
-            if (direction.magnitude >= 0.1f) 
+            if (direction.magnitude >= 0.1f || !freeLook) 
             {
                 targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + Camera.eulerAngles.y;
                 float angle = Mathf.SmoothDampAngle(freeLook ? transform.eulerAngles.y : Camera.eulerAngles.y, targetAngle, ref turnSmoothvelocity, turnSmoothTime);
                 transform.rotation = Quaternion.Euler(0.0f , angle , 0.0f);
 
-                Vector3 moveDir = Quaternion.Euler(0.0f, targetAngle, 0.0f) * Vector3.forward;
-                
-                controller.Move(moveDir * mySpeed * Time.deltaTime);
+                if (direction.magnitude >= 0.1f) 
+                {
+                    Vector3 moveDir = Quaternion.Euler(0.0f, targetAngle, 0.0f) * Vector3.forward;
+                    controller.Move(moveDir * mySpeed * Time.deltaTime);
+                }
             }
         }
 
